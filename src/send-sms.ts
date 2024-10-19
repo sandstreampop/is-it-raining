@@ -1,7 +1,7 @@
 import { Buffer } from 'buffer';
 import { Env } from '../worker-configuration';
 
-export const sendSMS = (message: string, env: Env) => {
+export const sendSMS = async (message: string, env: Env) => {
 	const auth = Buffer.from(env['46_ELKS_AUTH']).toString('base64');
 
 	let data = {
@@ -14,7 +14,7 @@ export const sendSMS = (message: string, env: Env) => {
 
 	console.log('Sending sms to ', env.PHONE_NUMBER_RECEIVER);
 
-	fetch('https://api.46elks.com/a1/sms', {
+	await fetch('https://api.46elks.com/a1/sms', {
 		method: 'post',
 		body,
 		headers: { Authorization: 'Basic ' + auth },

@@ -89,11 +89,12 @@ export default {
 
 		if (isNextRaining) {
 			console.log('It is going to rain');
-			sendSMS('Rain Alert: SMHI forecasts rain in the next hour. Stay dry!', env);
+			await sendSMS('Rain Alert: SMHI forecasts rain in the next hour. Stay dry!', env);
 			return;
 		}
 
 		console.log('It is not going to rain');
-		sendSMS('No rain forecasted. Enjoy the sun!', env);
+		await sendSMS('No rain forecasted. Enjoy the sun!', env);
+		return;
 	},
 } satisfies ExportedHandler<Env>;
