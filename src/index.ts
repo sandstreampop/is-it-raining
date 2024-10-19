@@ -15,19 +15,85 @@
  * Learn more at https://developers.cloudflare.com/workers/
  */
 
+import { Env } from '../worker-configuration';
+import { isRaining } from './is-raining';
+import { sendSMS } from './send-sms';
+import { SMHIData } from './types';
+
 export default {
 	// The scheduled handler is invoked at the interval set in our wrangler.toml's
 	// [[triggers]] configuration.
 	async scheduled(event, env, ctx): Promise<void> {
-		// A Cron Trigger can make requests to other endpoints on the Internet,
-		// publish to a Queue, query a D1 Database, and much more.
-		//
-		// We'll keep it simple and make an API call to a Cloudflare API:
-		let resp = await fetch('https://api.cloudflare.com/client/v4/ips');
-		let wasSuccessful = resp.ok ? 'success' : 'fail';
+		const uppsala = {
+			lat: 59.8586,
+			lon: 17.6389,
+		};
 
-		// You could store this result in KV, write to a D1 Database, or publish to a Queue.
-		// In this template, we'll just log the result:
-		console.log(`trigger fired at ${event.cron}: ${wasSuccessful}`);
+		const response = await fetch(
+			`https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/${uppsala.lon}/lat/${uppsala.lat}/data.json`
+		);
+
+		const data = (await response.json()) as SMHIData;
+
+		const now = new Date();
+		const currentForecast = data.timeSeries.find((timeSeries) => {
+			const forecastTime = new Date(timeSeries.validTime);
+			return forecastTime.getHours() === now.getHours();
+		});
+
+		if (!currentForecast) {
+			console.log('No forecast found');
+			return;
+		}
+
+		console.log({ currentForecast: JSON.stringify(currentForecast) });
+
+		const currentPcat = currentForecast.parameters.find(({ name, values }) => {
+			return name === 'pcat';
+		});
+
+		if (!currentPcat || currentPcat.values[0] === undefined) {
+			console.log('No pcat found');
+			return;
+		}
+
+		const isCurrentlyRaining = isRaining(currentPcat.values[0]);
+
+		if (isCurrentlyRaining) {
+			console.log('It is raining');
+			return;
+		}
+
+		const nextForecast = data.timeSeries.find((timeSeries) => {
+			const forecastTime = new Date(timeSeries.validTime);
+			return forecastTime.getHours() === now.getHours() + 1;
+		});
+
+		if (!nextForecast) {
+			console.log('No next forecast found');
+			return;
+		}
+
+		console.log({ nextForecast: JSON.stringify(nextForecast) });
+
+		const nextPcat = nextForecast.parameters.find(({ name }) => {
+			return name === 'pcat';
+		});
+
+		if (!nextPcat || nextPcat.values[0] === undefined) {
+			console.log('No next pcat found');
+			return;
+		}
+
+		const isNextRaining = isRaining(nextPcat.values[0]);
+
+		if (isNextRaining) {
+			console.log('It is going to rain');
+			sendSMS('Rain Alert: SMHI forecasts rain in the next hour. Stay dry!', env);
+			return;
+		}
+
+		console.log('It is not going to rain');
+		sendSMS('No rain forecasted. Enjoy the sun!', env);
 	},
 } satisfies ExportedHandler<Env>;

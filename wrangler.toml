@@ -2,12 +2,13 @@
 name = "is-it-raining"
 main = "src/index.ts"
 compatibility_date = "2024-10-11"
+compatibility_flags = [ "nodejs_compat" ]
 
 # Cron Triggers
 # Docs: https://developers.cloudflare.com/workers/platform/triggers/cron-triggers/
 # Configuration: https://developers.cloudflare.com/workers/wrangler/configuration/#triggers
 [triggers]
-crons = ["* * * * *"] # * * * * * = run every minute
+crons = ["0 * * * *"] # 0 * * * * = run at the start of every hour
 
 # Workers Logs
 # Docs: https://developers.cloudflare.com/workers/observability/logs/workers-logs/
