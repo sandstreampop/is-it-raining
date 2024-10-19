@@ -12,6 +12,8 @@ export const sendSMS = (message: string, env: Env) => {
 
 	const body = new URLSearchParams(data).toString();
 
+	console.log('Sending sms to ', env.PHONE_NUMBER_RECEIVER);
+
 	fetch('https://api.46elks.com/a1/sms', {
 		method: 'post',
 		body,
