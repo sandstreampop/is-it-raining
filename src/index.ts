@@ -16,6 +16,7 @@
  */
 
 import { Env } from '../worker-configuration';
+import { fetchForecastData } from './fetch-forecast-data';
 import { isRaining } from './is-raining';
 import { sendSMS } from './send-sms';
 import { SMHIData } from './types';
@@ -24,16 +25,7 @@ export default {
 	// The scheduled handler is invoked at the interval set in our wrangler.toml's
 	// [[triggers]] configuration.
 	async scheduled(event, env, ctx): Promise<void> {
-		const uppsala = {
-			lat: 59.8586,
-			lon: 17.6389,
-		};
-
-		const response = await fetch(
-			`https://opendata-download-metfcst.smhi.se/api/category/pmp3g/version/2/geotype/point/lon/${uppsala.lon}/lat/${uppsala.lat}/data.json`
-		);
-
-		const data = (await response.json()) as SMHIData;
+		const data = await fetchForecastData();
 
 		const now = new Date();
 		const currentForecast = data.timeSeries.find((timeSeries) => {
