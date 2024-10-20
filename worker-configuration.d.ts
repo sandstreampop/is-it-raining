@@ -2,8 +2,8 @@
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface,@typescript-eslint/no-empty-object-type
 export interface Env {
-	LAT: number;
-	LON: number;
+	LAT: string;
+	LON: string;
 	'46_ELKS_AUTH': string;
 	PHONE_NUMBER_RECEIVER: string;
 }

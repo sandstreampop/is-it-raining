@@ -25,7 +25,7 @@ export default {
 	// The scheduled handler is invoked at the interval set in our wrangler.toml's
 	// [[triggers]] configuration.
 	async scheduled(event, env, ctx): Promise<void> {
-		const data = await fetchForecastData();
+		const data = await fetchForecastData(env.LAT, env.LON);
 
 		const now = new Date();
 		const currentForecast = data.timeSeries.find((timeSeries) => {
