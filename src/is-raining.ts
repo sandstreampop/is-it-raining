@@ -23,11 +23,11 @@ export const isRaining = (pcat: number) => {
 		case 3:
 			return true;
 		case 4:
-			return false;
+			return true;
 		case 5:
 			return true;
 		case 6:
-			return false;
+			return true;
 		default:
 			return false;
 	}
