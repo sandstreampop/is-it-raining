@@ -8,7 +8,7 @@ compatibility_flags = [ "nodejs_compat" ]
 # Docs: https://developers.cloudflare.com/workers/platform/triggers/cron-triggers/
 # Configuration: https://developers.cloudflare.com/workers/wrangler/configuration/#triggers
 [triggers]
-crons = ["0 * * * *"] # 0 * * * * = run at the start of every hour
+crons = ["0 6-21 * * *"] # 0 6-21 * * * = run at the start of every hour from 6am through 10pm UTC
 
 # Workers Logs
 # Docs: https://developers.cloudflare.com/workers/observability/logs/workers-logs/
