@@ -94,7 +94,6 @@ export default {
 		}
 
 		console.log('It is not going to rain');
-		await sendSMS('No rain forecasted. Enjoy the sun!', env);
 		return;
 	},
 } satisfies ExportedHandler<Env>;
